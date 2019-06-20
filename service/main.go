@@ -141,7 +141,14 @@ func (w walker) Walk (name exif.FieldName, tag *tiff.Tag) error {
 		return nil
 	}
 	log.Println(tag.Format())
-	w.fields[string(name)] = tag.String()
+	switch tag.Id {
+	// XP tags are not being represented correctly for some reason
+	case 0x9c9e, 0x9c9f, 0x9c9d, 0x9c9c, 0x9c9b:
+		// TODO: Find a better way to represent XP tags
+		w.fields[string(name)] = tag.String()
+	default:
+		w.fields[string(name)] = tag.String()
+	}
 
 	return nil
 }
