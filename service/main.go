@@ -64,7 +64,7 @@ func Handler(ctx context.Context, r *events.APIGatewayProxyRequest) (Response, e
 		return res, err
 	}
 
-	var data = map[string]interface{}{}
+	var data = map[string]map[string]interface{}{}
 
 	for _, item := range lor.Contents {
 		if item.Key == nil {
@@ -117,7 +117,7 @@ func Handler(ctx context.Context, r *events.APIGatewayProxyRequest) (Response, e
 		}
 
 		for _, path := range paths {
-			data[*item.Key].(map[string]interface{})[path.Path.String()] = path.Value
+			data[*item.Key][path.Path.String()] = path.Value
 		}
 
 		break
