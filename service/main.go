@@ -93,7 +93,7 @@ func Handler(ctx context.Context, r *events.APIGatewayProxyRequest) (Response, e
 		if err != nil {
 			return res, err
 		}
-		var w = walker{fields: map[string]interface{}{}}
+		var w = exifWalker{fields: map[string]interface{}{}}
 		if err = x.Walk(w); err != nil {
 			return res, err
 		}
@@ -132,10 +132,10 @@ func Handler(ctx context.Context, r *events.APIGatewayProxyRequest) (Response, e
 	return res, nil
 }
 
-type walker struct {
+type exifWalker struct {
 	fields map[string]interface{}
 }
-func (w walker) Walk (name exif.FieldName, tag *tiff.Tag) error {
+func (w exifWalker) Walk (name exif.FieldName, tag *tiff.Tag) error {
 	if tag == nil {
 		return nil
 	}
