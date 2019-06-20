@@ -15,7 +15,6 @@ import (
 	"github.com/rwcarlsen/goexif/mknote"
 	"github.com/rwcarlsen/goexif/tiff"
 	"io/ioutil"
-	"log"
 	"strings"
 	"trimmer.io/go-xmp/xmp"
 )
@@ -140,7 +139,6 @@ func (w walker) Walk (name exif.FieldName, tag *tiff.Tag) error {
 	if tag == nil {
 		return nil
 	}
-	log.Println(tag.Format())
 	switch tag.Id {
 	// XP tags are not being represented correctly for some reason
 	case 0x9c9e, 0x9c9f, 0x9c9d, 0x9c9c, 0x9c9b:
