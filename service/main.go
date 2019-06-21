@@ -138,6 +138,7 @@ type exifWalker struct {
 }
 func (w exifWalker) Walk (name exif.FieldName, tag *tiff.Tag) error {
 	if tag == nil {
+		log.Printf("nil tag encountered in EXIF: %v", name)
 		return nil
 	}
 	switch tag.Id {
