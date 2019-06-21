@@ -23,7 +23,6 @@ import (
 
 const (
 	xmpPacketMarker = "<?xpacket"
-	dynamoTable = "image-data"
 )
 
 func init() {
@@ -122,7 +121,7 @@ func Handler(ctx context.Context, r *events.S3Event) error {
 		data["etag"] = dynamodb.AttributeValue{S: gor.ETag}
 
 		_, err = db.PutItemRequest(&dynamodb.PutItemInput{
-			TableName: aws.String(dynamoTable),
+			TableName: aws.String(os.Getenv("DYNAMO_TABLE_IMAGE_DATA")),
 			Item: data,
 		}).Send(ctx)
 		if err != nil {
