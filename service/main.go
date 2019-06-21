@@ -126,7 +126,7 @@ func Handler(ctx context.Context, r *events.S3Event) error {
 				data[string(p.Path)] = dynamodb.AttributeValue{S: aws.String(p.Value)}
 			}
 		}
-		data["etag"] = dynamodb.AttributeValue{S: gor.ETag}
+		data["etag"] = dynamodb.AttributeValue{S: aws.String(strings.TrimRight(strings.TrimLeft(*gor.ETag, `"`), `"`))}
 
 		_, err = db.PutItemRequest(&dynamodb.PutItemInput{
 			TableName: aws.String(os.Getenv("DYNAMO_TABLE_IMAGE_DATA")),
