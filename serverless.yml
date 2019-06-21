@@ -41,8 +41,6 @@ functions:
       - s3:
           bucket: skycatch-test-photos
           event: s3:ObjectCreated:*
-          rules:
-            - suffix: .jpg
 
 # you can add CloudFormation resource templates here
 resources:
