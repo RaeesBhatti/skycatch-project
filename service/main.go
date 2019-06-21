@@ -3,29 +3,27 @@ package main
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/aws/endpoints"
 	"github.com/aws/aws-sdk-go-v2/aws/external"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/rwcarlsen/goexif/exif"
 	"github.com/rwcarlsen/goexif/mknote"
 	"github.com/rwcarlsen/goexif/tiff"
 	"io/ioutil"
+	"log"
 	"strings"
 	"trimmer.io/go-xmp/xmp"
 )
 
-var (
-	awsBucket = aws.String("skycatch-engineering-challenges")
-	awsMarker = aws.String("201905-platform-extract-xmp-metadata/photos/")
-	internalServerError = errors.New("internal server error")
+const (
+	xmpPacketMarker = "<?xpacket"
+	dynamoTable = "image-data"
 )
-
-const xmpPacketMarker = "<?xpacket"
 
 func init() {
 	exif.RegisterParsers(mknote.All...)
@@ -38,98 +36,99 @@ func init() {
 type Response events.APIGatewayProxyResponse
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
-func Handler(ctx context.Context, r *events.APIGatewayProxyRequest) (Response, error) {
-	var res = Response{
-		StatusCode: 500,
-		Headers: map[string]string{},
-		IsBase64Encoded: false,
+func Handler(ctx context.Context, r *events.S3Event) (error) {
+	if r == nil || len(r.Records) < 1 {
+		return errors.New("invalid S3 records")
 	}
 
-	// The config the S3 Uploader will use
 	cfg, err := external.LoadDefaultAWSConfig()
 	if err != nil {
-		return res, err
+		return err
 	}
 	cfg.Region = endpoints.UsWest2RegionID
 
-	// Create an uploader with the config and default options
-	s3Client := s3.New(cfg)
+	// Create an S3 client with the config and default options
+	var s3Client = s3.New(cfg)
 
-	lor, err := s3Client.ListObjectsRequest(&s3.ListObjectsInput{
-		Bucket: awsBucket,
-		Marker: awsMarker,
-	}).Send(ctx)
-	if err != nil {
-		return res, err
-	}
+	var dbCfg = cfg.Copy()
+	dbCfg.EndpointResolver = aws.ResolveWithEndpointURL("http://host.docker.internal:8000")
+	var db = dynamodb.New(dbCfg)
 
-	var data = map[string]map[string]interface{}{}
-
-	for _, item := range lor.Contents {
-		if item.Key == nil {
-			continue
-		}
+	for _, item := range r.Records {
 		gor, err := s3Client.GetObjectRequest(&s3.GetObjectInput{
-			Bucket: awsBucket,
-			Key: item.Key,
+			Bucket: aws.String(item.S3.Bucket.Name),
+			Key: aws.String(item.S3.Object.Key),
 		}).Send(ctx)
 		if err != nil {
-			return res, err
-		}
-		if gor.ContentType == nil {
-			return res, internalServerError
-		}
-		if !strings.HasPrefix(*gor.ContentType, "image/") {
+			log.Printf("error while S3 getting object: %v", err)
 			continue
 		}
+		if !strings.HasPrefix(*gor.ContentType, "image/") {
+			log.Printf("expected file type encountered while iterating over event records: %s", *gor.ContentType)
+			continue
+		}
+
+		var data = map[string]dynamodb.AttributeValue{}
 
 		body, err := ioutil.ReadAll(gor.Body)
 		if err != nil {
-			return res, err
+			log.Printf("error while reading S3 object body: %v", err)
+			continue
 		}
 		gor.Body.Close()
 
 		x, err := exif.Decode(bytes.NewReader(body))
 		if err != nil {
-			return res, err
+			log.Printf("error while decoding EXIF data: %v", err)
+			continue
 		}
 		var w = exifWalker{fields: map[string]interface{}{}}
 		if err = x.Walk(w); err != nil {
-			return res, err
+			log.Printf("error while walking EXIF fields: %v", err)
+			continue
 		}
-
-		data[*item.Key] = w.fields
+		for key, val := range w.fields {
+			switch v := val.(type) {
+			case string:
+				data[key] = dynamodb.AttributeValue{S: aws.String(v)}
+			default:
+				log.Printf("unexpected type found while ranging EXIF fields: %v", v)
+				continue
+			}
+		}
 
 		if bytes.Count(body, []byte(xmpPacketMarker)) != 2 {
-			return res, internalServerError
+			log.Printf("error while finding XMP document: %v", err)
+			continue
 		}
 		var xmpIndex = bytes.Index(body, []byte(xmpPacketMarker))
-
 		var d = xmp.NewDocument()
 		d.SetDirty()
 		if err := xmp.Unmarshal(body[xmpIndex:], d); err != nil {
-			return res, err
+			log.Printf("error while parsing XMP document: %v", err)
+			continue
 		}
 		paths, err := d.ListPaths()
 		if err != nil {
-			return res, err
+			log.Printf("error while listing XMP paths: %v", err)
+			continue
 		}
-
-		for _, path := range paths {
-			data[*item.Key][path.Path.String()] = path.Value
+		for _, p := range paths {
+			data[string(p.Path)] = dynamodb.AttributeValue{S: aws.String(p.Value)}
 		}
+		data["etag"] = dynamodb.AttributeValue{S: gor.ETag}
 
-		break
+		_, err = db.PutItemRequest(&dynamodb.PutItemInput{
+			TableName: aws.String(dynamoTable),
+			Item: data,
+		}).Send(ctx)
+		if err != nil {
+			log.Printf("error while puting an item into DynamoDB: %v", err)
+			continue
+		}
 	}
 
-	d, err := json.Marshal(data)
-	if err != nil {
-		return res, err
-	}
-
-	res.Body = string(d)
-
-	return res, nil
+	return nil
 }
 
 type exifWalker struct {
