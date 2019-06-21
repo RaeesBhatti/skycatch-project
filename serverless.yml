@@ -34,6 +34,7 @@ package:
 functions:
   ServiceFunction:
     handler: bin/service
+    timeout: 120
     environment:
       DYNAMO_TABLE_IMAGE_DATA: ${self:resources.Resources.ImageDataTable.Properties.TableName}
     events:
