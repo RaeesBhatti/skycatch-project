@@ -92,7 +92,11 @@ func Handler(ctx context.Context, r *events.S3Event) error {
 		for key, val := range w.fields {
 			switch v := val.(type) {
 			case string:
-				data[key] = dynamodb.AttributeValue{S: aws.String(v)}
+				if len(v) < 1 {
+					data[key] = dynamodb.AttributeValue{NULL: aws.Bool(true)}
+				} else {
+					data[key] = dynamodb.AttributeValue{S: aws.String(v)}
+				}
 			default:
 				log.Printf("unexpected type found while ranging EXIF fields: %v", v)
 				continue
@@ -116,7 +120,11 @@ func Handler(ctx context.Context, r *events.S3Event) error {
 			continue
 		}
 		for _, p := range paths {
-			data[string(p.Path)] = dynamodb.AttributeValue{S: aws.String(p.Value)}
+			if len(p.Value) < 1 {
+				data[string(p.Path)] = dynamodb.AttributeValue{NULL: aws.Bool(true)}
+			} else {
+				data[string(p.Path)] = dynamodb.AttributeValue{S: aws.String(p.Value)}
+			}
 		}
 		data["etag"] = dynamodb.AttributeValue{S: gor.ETag}
 
@@ -141,14 +149,21 @@ func (w exifWalker) Walk (name exif.FieldName, tag *tiff.Tag) error {
 		log.Printf("nil tag encountered in EXIF: %v", name)
 		return nil
 	}
+	var value string
 	switch tag.Id {
 	// XP tags are not being represented correctly for some reason
 	case 0x9c9e, 0x9c9f, 0x9c9d, 0x9c9c, 0x9c9b:
 		// TODO: Find a better way to represent XP tags
-		w.fields[string(name)] = tag.String()
+		value = tag.String()
 	default:
-		w.fields[string(name)] = tag.String()
+		value = tag.String()
 	}
+
+	if strings.HasPrefix(value, `"`) && strings.HasSuffix(value, `"`) {
+		value = strings.TrimRight(strings.TrimLeft(value, `"`), `"`)
+	}
+
+	w.fields[string(name)] = value
 
 	return nil
 }
