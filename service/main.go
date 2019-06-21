@@ -7,7 +7,6 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/aws/endpoints"
 	"github.com/aws/aws-sdk-go-v2/aws/external"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -45,7 +44,6 @@ func Handler(ctx context.Context, r *events.S3Event) error {
 	if err != nil {
 		return err
 	}
-	cfg.Region = endpoints.UsWest2RegionID
 
 	// Create an S3 client with the config and default options
 	var s3Client = s3.New(cfg)
