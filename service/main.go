@@ -16,6 +16,7 @@ import (
 	"github.com/rwcarlsen/goexif/tiff"
 	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 	"trimmer.io/go-xmp/xmp"
 )
@@ -51,7 +52,9 @@ func Handler(ctx context.Context, r *events.S3Event) error {
 	var s3Client = s3.New(cfg)
 
 	var dbCfg = cfg.Copy()
-	dbCfg.EndpointResolver = aws.ResolveWithEndpointURL("http://host.docker.internal:8000")
+	if os.Getenv("AWS_LAMBDA_FUNCTION_NAME") == "test" {
+		dbCfg.EndpointResolver = aws.ResolveWithEndpointURL("http://host.docker.internal:8000")
+	}
 	var db = dynamodb.New(dbCfg)
 
 	for _, item := range r.Records {
