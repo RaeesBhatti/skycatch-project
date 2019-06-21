@@ -36,7 +36,7 @@ func init() {
 type Response events.APIGatewayProxyResponse
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
-func Handler(ctx context.Context, r *events.S3Event) (error) {
+func Handler(ctx context.Context, r *events.S3Event) error {
 	if r == nil || len(r.Records) < 1 {
 		return errors.New("invalid S3 records")
 	}
