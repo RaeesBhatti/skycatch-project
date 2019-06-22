@@ -15,12 +15,14 @@ provider:
         - dynamodb:GetItem
         - dynamodb:UpdateItem
         - dynamodb:PutItem
+        - dynamodb:Scan
       Resource:
         - { "Fn::GetAtt": ["ImageDataTable", "Arn"] }
         - { "Fn::Join": ["", ["Fn::GetAtt": ["ImageDataTable", "Arn"], "/index/*"]] }
     - Effect: "Allow"
       Action:
-        - "s3:GetObject"
+        - s3:GetObject
+        - s3:PutObject
       Resource: "arn:aws:s3:::skycatch-test-photos/*"
   environment:
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
@@ -43,6 +45,11 @@ functions:
           event: s3:ObjectCreated:*
           rules:
             - prefix: photos/
+  CSVExporter:
+    handler: bin/csvExporter
+    timeout: 500
+    environment:
+      DYNAMO_TABLE_IMAGE_DATA: ${self:resources.Resources.ImageDataTable.Properties.TableName}
 
 # you can add CloudFormation resource templates here
 resources:
