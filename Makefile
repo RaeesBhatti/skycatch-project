@@ -1,4 +1,4 @@
-.PHONY: build clean deploy gomod
+.PHONY: build clean deploy prepare dynamoexport
 
 build:
 	export GO111MODULE=on
@@ -11,6 +11,10 @@ clean:
 deploy: clean build
 	sls deploy --verbose
 
-gomod:
+prepare:
 	go get -u ./...
 	go mod vendor
+	pip3 install export-dynamodb
+
+dynamoexport:
+	export-dynamodb -t skycatch-project-dev-image-data -f csv -o output.csv
