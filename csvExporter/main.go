@@ -35,38 +35,7 @@ func Handler(ctx context.Context) error {
 	}
 	var db = dynamodb.New(cfg)
 
-	sr, err := db.ScanRequest(&dynamodb.ScanInput{
-		TableName: aws.String(os.Getenv("DYNAMO_TABLE_IMAGE_DATA")),
-	}).Send(ctx)
-	if err != nil {
-		log.Printf("error while scanning: %v", err)
-		return err
-	}
-
-	if *sr.Count < 1 {
-		log.Printf("no records found in scan")
-		return errors.New("no records found")
-	}
-
-	var data = [][]string{}
-	var keysMap = map[string]bool{}
-
-	for _, i := range sr.Items {
-		var item = []string{}
-		for k, v := range i {
-			keysMap[k] = true
-			if v.NULL != nil && *v.NULL != false {
-				item = append(item, "")
-			} else {
-				item = append(item, *v.S)
-			}
-		}
-		data = append(data, item)
-	}
-	var keys = []string{}
-	for k, _ := range keysMap {
-		keys = append(keys, k)
-	}
+	data, keys, err := scan(ctx, db, nil)
 
 	data = append(data, []string{})
 	copy(data[1:], data)
@@ -95,6 +64,57 @@ func Handler(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func scan(ctx context.Context, db *dynamodb.Client, lek map[string]dynamodb.AttributeValue) ([][]string, []string, error) {
+	var data = [][]string{}
+	var keysMap = map[string]bool{}
+
+	var scanParams = &dynamodb.ScanInput{
+		TableName: aws.String(os.Getenv("DYNAMO_TABLE_IMAGE_DATA")),
+	}
+	if lek != nil {
+		scanParams.ExclusiveStartKey = lek
+	}
+	sr, err := db.ScanRequest(scanParams).Send(ctx)
+	if err != nil {
+		log.Printf("error while scanning: %v", err)
+		return nil, nil, err
+	}
+
+	if *sr.Count < 1 {
+		log.Printf("no records found in scan")
+		return nil, nil, errors.New("no records found")
+	}
+
+	for _, i := range sr.Items {
+		var item = []string{}
+		for k, v := range i {
+			keysMap[k] = true
+			if v.NULL != nil && *v.NULL != false {
+				item = append(item, "")
+			} else {
+				item = append(item, *v.S)
+			}
+		}
+		data = append(data, item)
+	}
+	var keys = []string{}
+	for k, _ := range keysMap {
+		keys = append(keys, k)
+	}
+
+	if len(sr.LastEvaluatedKey) < 1 {
+		newData, newKeys, err := scan(ctx, db, sr.LastEvaluatedKey)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		data = append(data, newData...)
+		keys = append(keys, newKeys...)
+	}
+
+	return data, keys, err
 }
 
 func main() {
