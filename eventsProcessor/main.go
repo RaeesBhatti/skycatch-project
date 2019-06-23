@@ -28,12 +28,6 @@ func init() {
 	exif.RegisterParsers(mknote.All...)
 }
 
-// Response is of type APIGatewayProxyResponse since we're leveraging the
-// AWS Lambda Proxy Request functionality (default behavior)
-//
-// https://serverless.com/framework/docs/providers/aws/events/apigateway/#lambda-proxy-integration
-type Response events.APIGatewayProxyResponse
-
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, r *events.S3Event) error {
 	if r == nil || len(r.Records) < 1 {
