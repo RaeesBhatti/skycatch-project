@@ -47,7 +47,7 @@ functions:
             - prefix: photos/
   CSVExporter:
     handler: bin/csvExporter
-    timeout: 500
+    timeout: 900
     environment:
       DYNAMO_TABLE_IMAGE_DATA: ${self:resources.Resources.ImageDataTable.Properties.TableName}
 
