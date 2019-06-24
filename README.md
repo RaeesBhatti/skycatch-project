@@ -27,3 +27,10 @@ in the latest specs.
 * We're trying to get `string` value for most of the properties. Which results in
 sub-optimal representations some times.
 * There is some problem with XP tags representation in EXIF data.
+
+There are two ways to export data in CSV format.
+* I've implemented a Lambda function `CSVExporter` that scans the DynamoDB table,
+creates CSV file and puts it into S3 bucket. You can invoke the function directly from
+the CLI by running `aws lambda invoke --function-name FUNCTION_ARN outfile $1`.
+* Other way is to use `export-dynamodb` program. Run `make dynamoexport` in project
+directory.
