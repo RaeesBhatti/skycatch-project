@@ -12,9 +12,5 @@ to make sure that it is a valid file. And then it extracts EXIF and XMP data and
 the data into DynamoDB using `etag` as primary key.
 
 ### Exporting as CSV
-There are two ways to export data in CSV format.
-* I've implemented a Lambda function `CSVExporter` that scans the DynamoDB table,
-creates CSV file and puts it into S3 bucket. You can invoke the function directly from
-the CLI by running `aws lambda invoke --function-name FUNCTION_ARN outfile $1`.
-* Other way is to use `export-dynamodb` program. Run `make dynamoexport` in project
-directory.
+You can use `export-dynamodb` program to export DynamoDB entries as CSV. Run
+`make dynamoexport` in project directory and it will spit out a `output.csv`.

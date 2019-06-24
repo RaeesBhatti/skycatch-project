@@ -45,12 +45,6 @@ functions:
           event: s3:ObjectCreated:*
           rules:
             - prefix: photos/
-  CSVExporter:
-    handler: bin/csvExporter
-    timeout: 900
-    memorySize: 2048
-    environment:
-      DYNAMO_TABLE_IMAGE_DATA: ${self:resources.Resources.ImageDataTable.Properties.TableName}
 
 # you can add CloudFormation resource templates here
 resources:
