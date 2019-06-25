@@ -16,6 +16,10 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:PutItem
         - dynamodb:Scan
+        - dynamodb:DescribeStream
+        - dynamodb:GetRecords
+        - dynamodb:GetShardIterator
+        - dynamodb:ListStreams
       Resource:
         - { "Fn::GetAtt": ["ImageDataTable", "Arn"] }
         - { "Fn::Join": ["", ["Fn::GetAtt": ["ImageDataTable", "Arn"], "/index/*"]] }
@@ -43,14 +47,18 @@ functions:
       - s3:
           bucket: skycatch-test-photos
           event: s3:ObjectCreated:*
-          rules:
-            - prefix: photos/
   CSVExporter:
     handler: bin/csvExporter
     timeout: 900
     memorySize: 2048
     environment:
       DYNAMO_TABLE_IMAGE_DATA: ${self:resources.Resources.ImageDataTable.Properties.TableName}
+    events:
+      - stream:
+          type: dynamodb
+          batchSize: 10
+          arn:
+            Fn::GetAtt: [ ImageDataTable, StreamArn ]
 
 # you can add CloudFormation resource templates here
 resources:
@@ -67,3 +75,5 @@ resources:
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.DYNAMODB_TABLE}-image-data
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE
