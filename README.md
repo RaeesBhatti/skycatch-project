@@ -1,5 +1,5 @@
 # Skycatch project
-This is evautatory project for a job interview at Skycatch. 
+This is a evaluatory project for a job interview at Skycatch. 
 
 ## Architecture
 The system is based on AWS S3, AWS DynamoDB and AWS Lambda. 
