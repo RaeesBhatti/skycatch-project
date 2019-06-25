@@ -38,8 +38,8 @@ package:
    - ./bin/**
 
 functions:
-  EventsProcessor:
-    handler: bin/eventsProcessor
+  ImageProcessor:
+    handler: bin/imageProcessor
     timeout: 120
     environment:
       DYNAMO_TABLE_IMAGE_DATA: ${self:resources.Resources.ImageDataTable.Properties.TableName}
