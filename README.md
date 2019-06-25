@@ -15,7 +15,12 @@ the data into DynamoDB table using `etag` as primary key.
 A Lambda function `CSVExporter` has the stream of DynamoDB table mentioned above
 configure as a trigger. So, when the `ImageProcessor` function puts the data into
 DynamoDB, `CSVExporter` scans the table, creates a CSV from that data and puts it
-into the S3 bucket under the name `image-data.csv`. 
+into the S3 bucket under the name `image-data.csv`.
+
+### Why two functions?
+Both the image processing and saving the data to S3 can be done in the same function,
+but I intentionally stored the data in DynamoDB first because I think that will open
+up opportunities for more complex uses of data.
 
 ## Flaws
 Following are some known flaws in `ImageProcessor` function:
