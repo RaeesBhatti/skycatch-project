@@ -110,6 +110,7 @@ func scan(ctx context.Context, db *dynamodb.Client, lek map[string]dynamodb.Attr
 			}
 			if cap(item) < index + 1 {
 				item = make([]string, 0, index + 1)
+				copy(item, item)
 				item = item[:cap(item)]
 			}
 			if v.NULL != nil && *v.NULL != false {
