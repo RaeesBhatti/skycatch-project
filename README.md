@@ -40,3 +40,25 @@ with new parameters until there is no more data. That means that (even though un
 one error in any of them could shut the function down, discarding all of the
 fetched data.
 * There are no CloudWatch alarms configured for errors yet.
+
+## Usage
+It is best if you're testing on a **macOS** system.
+* Take a look at `serverless.yml`. You may want to change `provider.region` to one
+closest to you.
+* You'll have to choose a unique name for your
+[S3 bucket here](https://github.com/raeesbhatti/skycatch-project/blob/28bd9fa7f9be3b0f7658bf9ce4032e8a9a58f124/serverless.yml#L48)
+and specify the same name [for permissions here](https://github.com/raeesbhatti/skycatch-project/blob/28bd9fa7f9be3b0f7658bf9ce4032e8a9a58f124/serverless.yml#L30).
+* Make sure you have your AWS cli configured: `aws configure`
+* Make sure you have Serverless CLI installed: `npm i -g serverless@latest`
+* Make sure you GoLang 1.x installed locally: `brew install go`. You may need
+to configure your a GOPATH and GOROOT. `mkdir $HOME/.go; export GOPATH="${HOME}/.go"; export GOROOT="$(brew --prefix golang)/libexec"`
+* Run `prepare` Make routine in project directory: `make prepare`
+* Run `deploy` Make routine in project directory: `make deploy`
+* Upload some photos to the previously mentioned S3 bucket.
+`aws s3 cp LOCAL_DIRECTORY_HERE s3://S3_BUCKET_NAME_HERE/ --recursive`. `CSVExporter`
+function is currently configured to run every 10 DynamoDB stream events. So, make sure
+you upload enough photos.
+You can also do the upload using the AWS S3 Web portal.
+* Wait for some time depending on how many photos you uploaded (maybe a minute).
+* Download the CSV file from S3. `aws s3 cp s3://S3_BUCKET_NAME_HERE/image-data.csv image-data.csv`.
+You can also do this using the AWS S3 Web portal.
