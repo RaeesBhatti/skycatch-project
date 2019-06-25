@@ -23,7 +23,7 @@ but I intentionally stored the data in DynamoDB first because I think that will 
 up opportunities for more complex uses of data.
 
 ### Scaling
-The whole system is configure in a serverless fashion.
+The whole system is configured in a serverless fashion.
 * The data extraction is done on Lambda functions which scale up to your account
 concurrency limit and down to zero.
 * The data is stored on S3 and DynamoDB. And DynamoDB table is configured with
