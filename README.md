@@ -28,5 +28,5 @@ landscape.
 in the latest specs.
 * We're trying to get `string` value for most of the properties. Which results in
 sub-optimal representations some times.
-* There is some problem with XP tags representation in EXIF data.
-
+* There is some problem with XP (XP Comment and XP Author) tags representation in
+EXIF data.
