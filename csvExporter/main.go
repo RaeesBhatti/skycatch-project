@@ -26,9 +26,6 @@ func Handler(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if os.Getenv("AWS_LAMBDA_FUNCTION_NAME") == "test" {
-		cfg.EndpointResolver = aws.ResolveWithEndpointURL("http://host.docker.internal:8000")
-	}
 	var db = dynamodb.New(cfg)
 
 	data, keys, err := scan(ctx, db, nil)

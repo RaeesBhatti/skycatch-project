@@ -41,12 +41,8 @@ func Handler(ctx context.Context, r *events.S3Event) error {
 
 	// Create an S3 client with the config and default options
 	var s3Client = s3.New(cfg)
-
-	var dbCfg = cfg.Copy()
-	if os.Getenv("AWS_LAMBDA_FUNCTION_NAME") == "test" {
-		dbCfg.EndpointResolver = aws.ResolveWithEndpointURL("http://host.docker.internal:8000")
-	}
-	var db = dynamodb.New(dbCfg)
+	// Create DynamoDB client
+	var db = dynamodb.New(cfg)
 
 	for _, item := range r.Records {
 		gor, err := s3Client.GetObjectRequest(&s3.GetObjectInput{
