@@ -26,6 +26,11 @@ up opportunities for more complex uses of data.
 The whole system is configured in a serverless fashion.
 * The data extraction is done on Lambda functions which scale up to your account
 concurrency limit and down to zero.
+* `ImageProcessor` function runs on each `PutObject:*` event, processing the images
+in events, which means that it is generously saleable. And should be able to handle
+1 or a thousand of images per second without fail.
+* `CSVExporter` function is currently set to run with a batch size of 10 with
+DynamoDB steams. This can be fine tuned to get the best results in a production env. 
 * The data is stored on S3 and DynamoDB. And DynamoDB table is configured with
 `BillingMode: PAY_PER_REQUEST` and only primary key as index, which means that it
 can handle burst of read and write without any problem and can scale down
