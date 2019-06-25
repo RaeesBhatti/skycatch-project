@@ -62,6 +62,7 @@ func Handler(ctx context.Context) error {
 		log.Printf("error while uploading CSV to S3: %v", err)
 		return err
 	}
+	log.Println("successfully uploaded CSV to S3")
 
 	return nil
 }
@@ -105,6 +106,7 @@ func scan(ctx context.Context, db *dynamodb.Client, lek map[string]dynamodb.Attr
 	}
 
 	if len(sr.LastEvaluatedKey) > 0 {
+		log.Println("extending the scan request")
 		newData, newKeys, err := scan(ctx, db, sr.LastEvaluatedKey)
 		if err != nil {
 			return nil, nil, err
