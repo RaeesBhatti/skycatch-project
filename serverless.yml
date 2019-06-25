@@ -27,9 +27,16 @@ provider:
       Action:
         - s3:GetObject
         - s3:PutObject
-      Resource: "arn:aws:s3:::skycatch-test-photos/*"
+      Resource:
+        Fn::Join:
+          - ""
+          -
+            - "arn:aws:s3:::"
+            - ${self:provider.environment.S3_BUCKET_NAME}
+            - "/*"
   environment:
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    S3_BUCKET_NAME: skycatch-test-photos
 
 package:
  exclude:
@@ -45,7 +52,7 @@ functions:
       DYNAMO_TABLE_IMAGE_DATA: ${self:resources.Resources.ImageDataTable.Properties.TableName}
     events:
       - s3:
-          bucket: skycatch-test-photos
+          bucket: ${self:provider.environment.S3_BUCKET_NAME}
           event: s3:ObjectCreated:*
   CSVExporter:
     handler: bin/csvExporter
@@ -53,6 +60,7 @@ functions:
     memorySize: 2048
     environment:
       DYNAMO_TABLE_IMAGE_DATA: ${self:resources.Resources.ImageDataTable.Properties.TableName}
+      S3_BUCKET_NAME: ${self:provider.environment.S3_BUCKET_NAME}
     events:
       - stream:
           type: dynamodb

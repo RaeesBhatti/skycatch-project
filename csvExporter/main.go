@@ -16,10 +16,6 @@ import (
 	"os"
 )
 
-const (
-	bucketName = "skycatch-test-photos"
-)
-
 func init() {
 	exif.RegisterParsers(mknote.All...)
 }
@@ -51,7 +47,7 @@ func Handler(ctx context.Context) error {
 	var s3Client = s3.New(cfg)
 
 	_, err = s3Client.PutObjectRequest(&s3.PutObjectInput{
-		Bucket:        aws.String(bucketName),
+		Bucket:        aws.String(os.Getenv("S3_BUCKET_NAME")),
 		Key:           aws.String("image-data.csv"),
 		ContentType:   aws.String("text/csv"),
 		Body:          bytes.NewReader(body.Bytes()),
