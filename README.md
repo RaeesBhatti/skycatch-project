@@ -31,6 +31,14 @@ concurrency limit and down to zero.
 can handle burst of read and write without any problem and can scale down
 automatically to save on costs.
 
+## Potential uses of data
+There is a lot of rich data in each image that includes the horizontal and vertical
+position, speed, focus information etc.
+* This can be used to construct a Google Street View style viewer for a location that
+even goes into nooks, carnies, pipes and tunnels.
+* This data can be fed to ML algorithms along with the image data to construct a 3D
+object of buildings.
+
 ## Flaws
 Following are some known flaws in `ImageProcessor` function:
 * Library for parsing EXIF data is not as widely used compared to other libs in JS
