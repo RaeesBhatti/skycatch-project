@@ -36,6 +36,7 @@ Following are some known flaws in `CSVExporter` function:
 * It does a `Scan` of DynamoDB, which is resource intensive. I think it can be
 configured to work off of Stream event data, and existing data from S3.
 * A single `Scan` request can return 1MB of data at most, so, we're re-issuing them
-with new parameters until there is no more data. That means that one error in any of
-them could shut the function down, discarding all of the fetched data.
+with new parameters until there is no more data. That means that (even though unlikely)
+one error in any of them could shut the function down, discarding all of the
+fetched data.
 * There are no CloudWatch alarms configured for errors yet.
