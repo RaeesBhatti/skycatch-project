@@ -80,9 +80,9 @@ closest to you.
 to configure your a GOPATH and GOROOT. `mkdir $HOME/.go; export GOPATH="${HOME}/.go"; export GOROOT="$(brew --prefix golang)/libexec"`
 * Run `deploy` Make routine in project directory: `make deploy`
 * Upload some photos to the previously mentioned S3 bucket.
-`aws s3 cp LOCAL_DIRECTORY_HERE s3://S3_BUCKET_NAME_HERE/ --recursive`. `CSVExporter`
-function is currently configured to run every 10 DynamoDB stream events. So, make sure
-you upload enough photos.
+`aws s3 cp LOCAL_DIRECTORY_HERE s3://S3_BUCKET_NAME_HERE/ --recursive`.
+DynamoDB stream events are configured to dispatch with a batch size of 10,
+which triggers `CSVExporter` function. So, make sure you upload enough photos.
 You can also do the upload using the AWS S3 Web portal.
 * Download the CSV file from S3. `aws s3 cp s3://S3_BUCKET_NAME_HERE/image-data.csv image-data.csv`.
 You can also do this using the AWS S3 Web portal.
