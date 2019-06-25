@@ -83,3 +83,14 @@ You can also do the upload using the AWS S3 Web portal.
 * Wait for some time depending on how many photos you uploaded (maybe a few seconds).
 * Download the CSV file from S3. `aws s3 cp s3://S3_BUCKET_NAME_HERE/image-data.csv image-data.csv`.
 You can also do this using the AWS S3 Web portal.
+
+## Other ways I did this
+I tried several different ways to achieve these results. Some of which can be seen
+in the git history of this repo.
+* I configured a DataPipeline initially to export data as CSV to S3, but then
+settled on using a Lambda function because we can do potentially some data cleanup
+before saving it.
+* Another manual way to export DynamoDB table as CSV is via the
+[`export-dynamodb`](https://pypi.org/project/export-dynamodb/) tool. 
+* I initially configured everything to work with AWS SAM utility as well, so that,
+we can test the functions locally. But later decided to remove it to reduce complexity.
