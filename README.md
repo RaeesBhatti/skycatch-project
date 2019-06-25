@@ -46,8 +46,7 @@ It is best if you're testing on a **macOS** system.
 * Take a look at `serverless.yml`. You may want to change `provider.region` to one
 closest to you.
 * You'll have to choose a unique name for your
-[S3 bucket here](https://github.com/raeesbhatti/skycatch-project/blob/28bd9fa7f9be3b0f7658bf9ce4032e8a9a58f124/serverless.yml#L48)
-and specify the same name [for permissions here](https://github.com/raeesbhatti/skycatch-project/blob/28bd9fa7f9be3b0f7658bf9ce4032e8a9a58f124/serverless.yml#L30).
+[S3 bucket here](https://github.com/raeesbhatti/skycatch-project/blob/3fafbb20ea11d1c0c8e50a71bb02197bf88795cb/serverless.yml#L39).
 * Make sure you have your AWS cli configured: `aws configure`
 * Make sure you have Serverless CLI installed: `npm i -g serverless@latest`
 * Make sure you GoLang 1.x installed locally: `brew install go`. You may need
