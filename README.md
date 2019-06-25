@@ -5,15 +5,17 @@ This is evautatory project for a job interview at Skycatch.
 The system is based on AWS S3, AWS DynamoDB and AWS Lambda. 
 
 ### Data extraction
-The S3 bucket is configured as a trigger for `EventsProcessor` Lambda function. When
+The S3 bucket is configured as a trigger for `ImageProcessor` Lambda function. When
 you upload a file to the bucket it triggers an S3 event. The Lambda function uses the
 data in event to fetch the related files from S3. Then it does some basic validations
 to make sure that it is a valid file. And then it extracts EXIF and XMP data and puts
-the data into DynamoDB using `etag` as primary key.
+the data into DynamoDB table using `etag` as primary key.
 
 ### Exporting as CSV
-You can use `export-dynamodb` program to export DynamoDB entries as CSV. Run
-`make dynamoexport` in project directory and it will spit out a `output.csv`.
+A Lambda function `CSVExporter` has the stream of DynamoDB table mentioned above
+configure as a trigger. So, when the `ImageProcessor` function puts the data into
+DynamoDB, `CSVExporter` scans the table, creates a CSV from that data and puts it
+into the S3 bucket under the name `image-data.csv`. 
 
 ## Flaws
 Following are some known flaws in `EventsProcessor` function:
@@ -28,9 +30,3 @@ in the latest specs.
 sub-optimal representations some times.
 * There is some problem with XP tags representation in EXIF data.
 
-There are two ways to export data in CSV format.
-* I've implemented a Lambda function `CSVExporter` that scans the DynamoDB table,
-creates CSV file and puts it into S3 bucket. You can invoke the function directly from
-the CLI by running `aws lambda invoke --function-name FUNCTION_ARN outfile $1`.
-* Other way is to use `export-dynamodb` program. Run `make dynamoexport` in project
-directory.
