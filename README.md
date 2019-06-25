@@ -59,6 +59,6 @@ to configure your a GOPATH and GOROOT. `mkdir $HOME/.go; export GOPATH="${HOME}/
 function is currently configured to run every 10 DynamoDB stream events. So, make sure
 you upload enough photos.
 You can also do the upload using the AWS S3 Web portal.
-* Wait for some time depending on how many photos you uploaded (maybe a minute).
+* Wait for some time depending on how many photos you uploaded (maybe a few seconds).
 * Download the CSV file from S3. `aws s3 cp s3://S3_BUCKET_NAME_HERE/image-data.csv image-data.csv`.
 You can also do this using the AWS S3 Web portal.
