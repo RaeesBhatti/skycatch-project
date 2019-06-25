@@ -2,7 +2,7 @@
 This is a evaluatory project for a job interview at Skycatch. 
 
 ## Architecture
-The system is based on AWS S3, AWS DynamoDB and AWS Lambda. 
+The system is based on AWS S3, AWS DynamoDB and AWS Lambda. ![system architecture](images/skycatch-project-arch.png)
 
 ### Data extraction
 The S3 bucket is configured as a trigger for `ImageProcessor` Lambda function. When
