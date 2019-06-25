@@ -30,6 +30,7 @@ in the latest specs.
 sub-optimal representations some times.
 * There is some problem with XP (XP Comment and XP Author) tags representation in
 EXIF data.
+* There are no CloudWatch alarms configured for errors yet.
 
 Following are some known flaws in `CSVExporter` function:
 * It does a `Scan` of DynamoDB, which is resource intensive. I think it can be
