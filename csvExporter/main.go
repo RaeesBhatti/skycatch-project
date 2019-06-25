@@ -29,6 +29,9 @@ func Handler(ctx context.Context) error {
 	var db = dynamodb.New(cfg)
 
 	data, keys, err := scan(ctx, db, nil)
+	if err != nil {
+		return err
+	}
 
 	data = append(data, []string{})
 	copy(data[1:], data)
