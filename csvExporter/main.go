@@ -104,7 +104,7 @@ func scan(ctx context.Context, db *dynamodb.Client, lek map[string]dynamodb.Attr
 		keys = append(keys, k)
 	}
 
-	if len(sr.LastEvaluatedKey) < 1 {
+	if len(sr.LastEvaluatedKey) > 0 {
 		newData, newKeys, err := scan(ctx, db, sr.LastEvaluatedKey)
 		if err != nil {
 			return nil, nil, err
