@@ -22,6 +22,15 @@ Both the image processing and saving the data to S3 can be done in the same func
 but I intentionally stored the data in DynamoDB first because I think that will open
 up opportunities for more complex uses of data.
 
+### Scaling
+The whole system is configure in a serverless fashion.
+* The data extraction is done on Lambda functions which scale up to your account
+concurrency limit and down to zero.
+* The data is stored on S3 and DynamoDB. And DynamoDB table is configured with
+`BillingMode: PAY_PER_REQUEST` and only primary key as index, which means that it
+can handle burst of read and write without any problem and can scale down
+automatically to save on costs.
+
 ## Flaws
 Following are some known flaws in `ImageProcessor` function:
 * Library for parsing EXIF data is not as widely used compared to other libs in JS
