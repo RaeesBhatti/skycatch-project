@@ -7,6 +7,7 @@ build:
 
 clean:
 	rm -rf ./bin outfile
+	go mod tidy
 
 deploy: prepare clean build
 	sls deploy --verbose
