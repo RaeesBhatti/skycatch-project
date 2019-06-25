@@ -78,7 +78,6 @@ closest to you.
 * Make sure you have Serverless CLI installed: `npm i -g serverless@latest`
 * Make sure you GoLang 1.x installed locally: `brew install go`. You may need
 to configure your a GOPATH and GOROOT. `mkdir $HOME/.go; export GOPATH="${HOME}/.go"; export GOROOT="$(brew --prefix golang)/libexec"`
-* Run `prepare` Make routine in project directory: `make prepare`
 * Run `deploy` Make routine in project directory: `make deploy`
 * Upload some photos to the previously mentioned S3 bucket.
 `aws s3 cp LOCAL_DIRECTORY_HERE s3://S3_BUCKET_NAME_HERE/ --recursive`. `CSVExporter`
