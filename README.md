@@ -18,7 +18,7 @@ DynamoDB, `CSVExporter` scans the table, creates a CSV from that data and puts i
 into the S3 bucket under the name `image-data.csv`. 
 
 ## Flaws
-Following are some known flaws in `EventsProcessor` function:
+Following are some known flaws in `ImageProcessor` function:
 * Library for parsing EXIF data is not as widely used compared to other libs in JS
 landscape.
 * Library for parsing XMP data is not as widely used compared to other libs in JS
