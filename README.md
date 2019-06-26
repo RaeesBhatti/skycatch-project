@@ -21,7 +21,7 @@ into the S3 bucket under the name `image-data.csv`.
 Both the image processing and saving the data to S3 can be done in the same function,
 but I intentionally stored the data in DynamoDB first because I think that will open
 up opportunities for more complex uses of data. Also, the `ImageProcessor` function
-rubs on each upload, while recreating the CSV file on each upload is possible, it
+runs on each upload, while recreating the CSV file on each upload is possible, it
 would be very inefficient.
 
 ### Scaling
