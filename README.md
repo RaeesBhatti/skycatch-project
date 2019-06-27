@@ -74,7 +74,7 @@ fetched data.
 It is best if you're testing on a **macOS** system.
 * Change `provider.region` in `serverless.yml` to one closest to you.
 * Change `provider.environment.S3_BUCKET_NAME` in `serverles.yml` to a unique name for
-your S3 bucket.
+a new S3 bucket.
 * `aws configure`. Make sure you have your AWS cli configured
 * `npm i -g serverless@latest`. Make sure you have Serverless CLI installed:
 * `brew install go`. Make sure you GoLang 1.x installed locally. You may need
