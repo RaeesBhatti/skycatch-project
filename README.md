@@ -72,25 +72,24 @@ fetched data.
 
 ## Usage
 It is best if you're testing on a **macOS** system.
-* Take a look at `serverless.yml`. You may want to change `provider.region` to one
-closest to you.
-* You'll have to choose a unique name for your
-[S3 bucket at `provider.environment.S3_BUCKET_NAME`](https://github.com/raeesbhatti/skycatch-project/blob/3fafbb20ea11d1c0c8e50a71bb02197bf88795cb/serverless.yml#L39).
-* Make sure you have your AWS cli configured: `aws configure`
-* Make sure you have Serverless CLI installed: `npm i -g serverless@latest`
-* Make sure you GoLang 1.x installed locally: `brew install go`. You may need
-to configure your a GOPATH and GOROOT. `mkdir $HOME/.go; export GOPATH="${HOME}/.go"; export GOROOT="$(brew --prefix golang)/libexec"`
+* Change `provider.region` in `serverless.yml` to one closest to you.
+* Change `provider.environment.S3_BUCKET_NAME` in `serverles.yml` to a unique name for
+your S3 bucket.
+* `aws configure`. Make sure you have your AWS cli configured
+* `npm i -g serverless@latest`. Make sure you have Serverless CLI installed:
+* `brew install go`. Make sure you GoLang 1.x installed locally. You may need
+to configure your a GOPATH and GOROOT. `mkdir $HOME/.go; export GOPATH="${HOME}/.go";
+export GOROOT="$(brew --prefix go)/libexec"`
 * Run `deploy` Make routine in project directory: `make deploy`
-* Upload some photos to the previously mentioned S3 bucket.
-`aws s3 cp LOCAL_DIRECTORY_HERE s3://S3_BUCKET_NAME_HERE/ --recursive`.
-DynamoDB stream events are configured to dispatch with a batch size of 10,
-which triggers `CSVExporter` function. So, make sure you upload enough photos.
-You can also do the upload using the AWS S3 Web portal.
-* Download the CSV file from S3. `aws s3 cp s3://S3_BUCKET_NAME_HERE/image-data.csv image-data.csv`.
-You can also do this using the AWS S3 Web portal.
+* `aws s3 cp LOCAL_DIRECTORY_HERE s3://S3_BUCKET_NAME_HERE/ --recursive`. Upload some
+photos to the previously mentioned S3 bucket. DynamoDB stream events are configured
+to dispatch with a batch size of 10, which triggers `CSVExporter` function. So, make
+sure you upload enough photos. You can also do the upload using the AWS S3 Web portal.
+* `aws s3 cp s3://S3_BUCKET_NAME_HERE/image-data.csv image-data.csv`. Download the CSV
+file from S3. You can also do this using the AWS S3 Web portal.
 
 ## Other ways I did this
-I tried several different ways to achieve these results. Some of which can be seen
+I tried several different ways of achieving these results. Some of which can be seen
 in the git history of this repo.
 * I configured a DataPipeline initially to export data as CSV to S3, but then
 settled on using a Lambda function because we can do potentially some data cleanup
