@@ -94,6 +94,10 @@ in the git history of this repo.
 * I configured a DataPipeline initially to export data as CSV to S3, but then
 settled on using a Lambda function because we can do potentially some data cleanup
 before saving it.
+* I also configured S3 events to go to SQS Queue and then added that SQS Queue as a
+trigger for the Lambda function that both extracts and saves data to S3. But AWS
+doesn't allow to use FIFO SQS Queues for that purpose, which could easily lead to
+de-syncronized writes and loss of data.
 * Another manual way to export DynamoDB table as CSV is via the
 [`export-dynamodb`](https://pypi.org/project/export-dynamodb/) tool. 
 * I initially configured everything to work with AWS SAM utility as well, so that,
